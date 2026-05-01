@@ -717,9 +717,9 @@
   }
   function initPanel() {
     if (!els.panelToggle || !els.leftPanel) return;
-    const isOpen = getPanelState();
-    els.leftPanel.classList.toggle('collapsed', !isOpen);
-    els.panelToggle.textContent = isOpen ? '✕' : '☰';
+    // Always start collapsed — user can toggle open
+    els.leftPanel.classList.add('collapsed');
+    els.panelToggle.textContent = '☰';
     els.panelToggle.addEventListener('click', () => {
       els.leftPanel.classList.toggle('collapsed');
       const collapsed = els.leftPanel.classList.contains('collapsed');
