@@ -267,11 +267,10 @@
       </label>
       <label class="small"><span>Model</span>
         <select id="model">
-          <option value="" selected disabled>- Load models -</option>
+          <option value="" selected>🔄 Load models…</option>
         </select>
       </label>
       <div class="row">
-        <button id="loadModelsBtn" class="secondary" title="GET /v1/models">Load models</button>
         <span id="modelStatus" class="small"></span>
       </div>
       <div class="row">
@@ -376,7 +375,7 @@
     importBtn: document.getElementById('importBtn'),
     importFile: document.getElementById('importFile'),
     exportBtn: document.getElementById('exportBtn'),
-    loadModelsBtn: document.getElementById('loadModelsBtn'),
+
     modelStatus: document.getElementById('modelStatus'),
     rawBox: document.getElementById('rawBox'),
     jsonEditor: document.getElementById('jsonEditor'),
@@ -840,7 +839,7 @@
     if (key) headers['Authorization'] = `Bearer ${key}`;
 
     if (els.modelStatus) els.modelStatus.textContent = 'Loading...';
-    if (els.loadModelsBtn) els.loadModelsBtn.disabled = true;
+    if (els.model) els.model.disabled = true;
 
     try {
       const res = await fetch(url, { method: 'GET', headers, mode: 'cors' });
@@ -884,7 +883,7 @@
       if (els.modelStatus) els.modelStatus.textContent = 'Error';
       addMessage('system', `[Model load] ${e.message}`);
     } finally {
-      if (els.loadModelsBtn) els.loadModelsBtn.disabled = false;
+      if (els.model) els.model.disabled = false;
     }
   }
 
@@ -897,7 +896,7 @@
       if (!ensureApiBaseAllowed()) return;
 
       if (!els.model.value) {
-        addMessage('system', '[Hint] No model selected - click "Load models", then choose one.');
+        addMessage('system', '[Hint] Select a model from the dropdown, or click "🔄 Load models…" to fetch available models from /v1/models.');
         return;
       }
 
@@ -1270,7 +1269,12 @@
   els.importBtn.addEventListener('click', () => els.importFile.click());
   els.importFile.addEventListener('change', () => { const f = els.importFile.files?.[0]; if (f) handleFile(f); els.importFile.value = ''; });
   els.exportBtn.addEventListener('click', exportChat);
-  if (els.loadModelsBtn) els.loadModelsBtn.addEventListener('click', loadModels);
+  // Model select: loading placeholder or actual selection
+  if (els.model) {
+    els.model.addEventListener('change', (e) => {
+      if (e.target.value === '') loadModels();
+    });
+  }
   els.input.addEventListener('keydown', (e) => { if ((e.key === 'Enter' && (e.ctrlKey || e.metaKey))) { e.preventDefault(); sendMessage(); } });
   els.temp.addEventListener('input', () => { els.tempVal.textContent = parseFloat(els.temp.value).toFixed(1); });
   els.settingsToggle.addEventListener('click', () => {
