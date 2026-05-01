@@ -724,17 +724,25 @@
     // Always start collapsed — user can toggle open
     els.leftPanel.classList.add('collapsed');
     els.panelToggle.textContent = '☰';
-    els.panelToggle.addEventListener('click', () => {
+    els.panelToggle.addEventListener('click', (e) => {
+      e.stopPropagation();
       els.leftPanel.classList.toggle('collapsed');
-      const collapsed = els.leftPanel.classList.contains('collapsed');
-      els.panelToggle.textContent = collapsed ? '☰' : '✕';
-      setPanelState(!collapsed);
+      setPanelState(!els.leftPanel.classList.contains('collapsed'));
     });
+    // Click on main chat area closes panel
+    const mainArea = els.scroller?.closest('.main-area');
+    if (mainArea) {
+      mainArea.addEventListener('click', () => {
+        if (!els.leftPanel.classList.contains('collapsed')) {
+          els.leftPanel.classList.add('collapsed');
+          setPanelState(false);
+        }
+      });
+    }
     // Escape key closes panel
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape' && !els.leftPanel.classList.contains('collapsed')) {
         els.leftPanel.classList.add('collapsed');
-        els.panelToggle.textContent = '☰';
         setPanelState(false);
       }
     });
