@@ -9,15 +9,23 @@
     *{box-sizing:border-box}
     html,body{height:100%}
     body{margin:0; font:14px/1.45 system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Helvetica, Arial; background:var(--bg); color:var(--ink)}
-    .wrap{display:grid; grid-template-rows:auto 1fr auto; height:100%}
     /* ---------- Layout: left panel + main area ---------- */
-    .wrap{display:grid; grid-template-columns:280px 1fr; grid-template-rows:1fr; height:100%}
+    .wrap{display:grid; grid-template-columns:auto 1fr; grid-template-rows:1fr; height:100%}
     .left-panel{background:var(--panel); border-right:1px solid var(--line); display:flex; flex-direction:column; padding:.6rem; overflow-y:auto; overflow-x:hidden; transition:width 300ms ease; width:280px}
-    .left-panel.collapsed{width:40px}
+    .left-panel.collapsed{width:40px; padding:.6rem 0; overflow:hidden; scrollbar-width:none}
+    .left-panel.collapsed::-webkit-scrollbar{display:none}
+    .left-panel.collapsed .lp-brand,
+    .left-panel.collapsed .lp-controls{opacity:0; pointer-events:none; transition:opacity 150ms ease}
     .main-area{display:flex; flex-direction:column; min-width:0; overflow:hidden}
 
     /* Left panel internals */
-    .lp-brand{display:flex; flex-direction:column; gap:.15rem; align-items:flex-start; padding-bottom:.5rem; border-bottom:1px solid var(--line); margin-bottom:.5rem}
+    .lp-top{display:flex; align-items:center; gap:.5rem; padding-bottom:.5rem; border-bottom:1px solid var(--line); margin-bottom:.5rem}
+    .lp-top .lp-toggle{width:36px; height:36px; flex:0 0 36px; display:flex; align-items:center; justify-content:center; background:var(--panel); border:1px solid var(--line); border-radius:.5rem; cursor:pointer; font-size:18px; color:var(--ink)}
+    .lp-top .lp-toggle:hover{border-color:var(--acc)}
+    .left-panel.collapsed .lp-top{padding-bottom:0; margin-bottom:0; border-bottom:none}
+    .left-panel:not(.collapsed) .lp-top .lp-toggle{order:1}
+    .left-panel.collapsed .lp-toggle{width:28px; height:28px; flex:0 0 28px; font-size:16px}
+    .lp-brand{display:flex; flex-direction:column; gap:.15rem; align-items:flex-start}
     .lp-brand .title{font-weight:600; letter-spacing:.2px}
     .lp-brand .promo{font-size:12px; color:var(--acc); text-decoration:none; opacity:.9}
     .lp-brand .promo:hover{opacity:1; text-decoration:underline}
@@ -34,11 +42,7 @@
     .lp-controls .secondary{background:#0c0f15}
     .lp-controls #tokenRate{font-size:12px; color:var(--muted); width:100%; text-align:right}
 
-    /* Toggle button */
-    .panel-toggle{position:fixed; top:.5rem; left:.5rem; z-index:50; width:36px; height:36px; display:flex; align-items:center; justify-content:center; background:var(--panel); border:1px solid var(--line); border-radius:.5rem; cursor:pointer; font-size:18px; color:var(--ink); transition:left 300ms ease, opacity 200ms ease}
-    .left-panel:not(.collapsed) ~ .main-area .panel-toggle{left:284px}
-    .left-panel.collapsed ~ .main-area .panel-toggle{left:.5rem}
-    .panel-toggle:hover{border-color:var(--acc)}
+    /* Toggle button is inside .lp-top — see Left panel internals above */
 
     /* Info dialog */
     dialog.info-dialog{
@@ -220,16 +224,12 @@
 
     /* ---------- Responsive ---------- */
     @media (max-width: 980px){
-      .wrap{grid-template-columns:240px 1fr}
       .left-panel{width:240px}
       .left-panel.collapsed{width:36px}
-      .left-panel:not(.collapsed) ~ .main-area .panel-toggle{left:244px}
     }
     @media (max-width: 720px){
-      .wrap{grid-template-columns:200px 1fr}
       .left-panel{width:200px}
       .left-panel.collapsed{width:36px}
-      .left-panel:not(.collapsed) ~ .main-area .panel-toggle{left:204px}
       main#scroller{padding:.85rem .75rem 1.25rem}
       .bar{grid-template-columns:1fr}
       footer .row{flex-wrap:wrap}
@@ -269,9 +269,12 @@
 <body>
 <div class="wrap">
   <nav class="left-panel">
-    <div class="lp-brand">
-      <div class="title">💬 StatelessChatUI</div>
-      <a class="promo" href="https://www.promptinjection.net/" target="_blank" rel="noopener">PromptInjection.net</a>
+    <div class="lp-top">
+      <button id="panelToggle" class="lp-toggle" title="Toggle settings panel" aria-label="Toggle settings panel">☰</button>
+      <div class="lp-brand">
+        <div class="title">💬 StatelessChatUI</div>
+        <a class="promo" href="https://www.promptinjection.net/" target="_blank" rel="noopener">PromptInjection.net</a>
+      </div>
     </div>
     <div class="lp-controls">
       <label class="small"><span>API Base</span>
@@ -300,8 +303,6 @@
   </nav>
 
   <div class="main-area">
-    <button id="panelToggle" class="panel-toggle" title="Toggle settings panel" aria-label="Toggle settings panel">☰</button>
-
     <main id="scroller">
     <div id="drop" class="drop">Drop a file here to import a chat (JSON in the usual <code>[{role, content}]</code> format).<br><span class="hint">Or click <b>Import</b> above.</span></div>
 
