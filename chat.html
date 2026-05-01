@@ -39,26 +39,7 @@
     .lp-controls .secondary{background:#0c0f15}
     .lp-controls #tokenRate{font-size:12px; color:var(--muted); width:100%; text-align:right}
 
-    /* Toggle button is inside .lp-top — see Left panel internals above */
-
-    /* Info dialog */
-    dialog.info-dialog{
-      border:1px solid var(--line);
-      border-radius:14px;
-      padding:0;
-      background:var(--panel);
-      color:var(--ink);
-      max-width:min(560px, calc(100vw - 24px));
-      width: 560px;
-    }
-    dialog.info-dialog::backdrop{background:rgba(0,0,0,.55)}
-    .info-card{margin:0; padding:.9rem 1rem; display:flex; flex-direction:column; gap:.75rem}
-    .info-head{display:flex; align-items:center; justify-content:space-between; gap:.75rem; border-bottom:1px solid var(--line); padding-bottom:.6rem}
-    .info-title{font-weight:600}
-    .info-body a{color:var(--acc); text-decoration:none}
-    .info-body a:hover{text-decoration:underline}
-    .info-actions{display:flex; justify-content:flex-end; gap:.5rem}
-
+    /* Toggle button is inside .lp-top - see Left panel internals above */
 
 
 
@@ -270,6 +251,7 @@
       <button id="panelToggle" class="lp-toggle" title="Toggle settings panel" aria-label="Toggle settings panel">☰</button>
       <div class="lp-brand">
         <div class="title"><a href="https://github.com/PieBru/StatelessChatUI" target="_blank" rel="noopener" style="color:inherit; text-decoration:none">💬 StatelessChatUI</a></div>
+        <div class="version" style="font-size:11px; color:var(--muted)">v<span id="versionDisplay"></span></div>
       </div>
     </div>
     <div class="lp-controls">
@@ -281,7 +263,7 @@
       </label>
       <label class="small"><span>Model</span>
         <select id="model">
-          <option value="" selected disabled>— Load models —</option>
+          <option value="" selected disabled>- Load models -</option>
         </select>
       </label>
       <div class="row">
@@ -289,7 +271,6 @@
         <input id="importFile" type="file" accept="application/json,.json,.jsonl" class="hidden" />
         <button id="exportBtn" title="Export chat">Export</button>
         <button id="loadModelsBtn" class="secondary" title="GET /v1/models">Load models</button>
-        <button id="infoBtn" class="secondary" title="Info">Info</button>
         <span id="modelStatus" class="small"></span>
       </div>
       <div class="row">
@@ -365,26 +346,6 @@
 
   <button id="toBottom" class="to-bottom" title="Jump to bottom">▼ Bottom</button>
 
-<dialog id="infoDialog" class="info-dialog">
-  <form method="dialog" class="info-card">
-    <div class="info-head">
-      <div class="info-title">💬 StatelessChatUI</div>
-      <button class="secondary" value="close" aria-label="Close">✕</button>
-    </div>
-    <div class="info-body">
-      <div><span class="muted">Version:</span> <code id="infoVersion">0.0.0</code></div>
-      <div><span class="muted">Project URL:</span> <a id="infoProjectUrl" href="https://example.com/statelesschatui" target="_blank" rel="noopener">https://example.com/statelesschatui</a></div>
-      <div><span class="muted">AI Blog:</span> <a href="https://www.promptinjection.net/" target="_blank" rel="noopener">PromptInjection.net</a></div>
-      <div><span class="muted">Imprint:</span> <a id="infoImprint" href="http://www.locallightai.com/imprint" target="_blank" rel="noopener">http://www.locallightai.com/imprint</a></div>
-      <div class="muted" style="margin-top:.6rem; font-size:12px">Stateless UI - no server-side chat storage.</div>
-    </div>
-    <div class="info-actions">
-      <button value="close">Close</button>
-    </div>
-  </form>
-</dialog>
-
-
 <script>
 (() => {
   const els = {
@@ -423,11 +384,7 @@
     settingsToggle: document.getElementById('settingsToggle'),
     settingsPanel: document.getElementById('settingsPanel'),
     tokenRate: document.getElementById('tokenRate'),
-    infoBtn: document.getElementById('infoBtn'),
-    infoDialog: document.getElementById('infoDialog'),
-    infoVersion: document.getElementById('infoVersion'),
-    infoProjectUrl: document.getElementById('infoProjectUrl'),
-    infoImprint: document.getElementById('infoImprint'),
+    versionDisplay: document.getElementById('versionDisplay'),
     // Panel toggle:
     panelToggle: document.getElementById('panelToggle'),
     leftPanel: document.querySelector('.left-panel'),
@@ -558,8 +515,6 @@
   const NL = '\n';
 
   const APP_VERSION = '1.01';
-  const PROJECT_URL = 'https://www.locallightai.com/scu';
-  const IMPRINT_URL = 'https://www.srware.net/imprint';
 
   let streamStartTime = 0;
   let lastUpdateTime = 0;
@@ -1316,28 +1271,8 @@
     els.settingsPanel.classList.toggle('hidden');
   });
 
-  /* ---------- Info dialog ---------- */
-  if (els.infoVersion) els.infoVersion.textContent = APP_VERSION;
-  if (els.infoProjectUrl) {
-    els.infoProjectUrl.textContent = PROJECT_URL;
-    els.infoProjectUrl.href = PROJECT_URL;
-  }
-  if (els.infoImprint) {
-    els.infoImprint.textContent = IMPRINT_URL;
-    els.infoImprint.href = IMPRINT_URL;
-  }
-  if (els.infoBtn && els.infoDialog) {
-    els.infoBtn.addEventListener('click', () => {
-      if (typeof els.infoDialog.showModal === 'function') els.infoDialog.showModal();
-      else els.infoDialog.setAttribute('open', '');
-    });
-    // Click outside the card closes the dialog
-    els.infoDialog.addEventListener('click', (e) => {
-      const r = els.infoDialog.getBoundingClientRect();
-      // If click lands on the backdrop (not on the card), close.
-      if (e.target === els.infoDialog) els.infoDialog.close();
-    });
-  }
+  /* ---------- Version display ---------- */
+  if (els.versionDisplay) els.versionDisplay.textContent = APP_VERSION;
 
   /* ---------- Panel init ---------- */
   initPanel();
