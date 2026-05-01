@@ -17,7 +17,7 @@
     .left-panel.collapsed .lp-brand,
     .left-panel.collapsed .lp-controls,
     .left-panel.collapsed .drop,
-    .left-panel.collapsed details.raw,
+    .left-panel.collapsed .raw,
     .left-panel.collapsed .lp-footer{opacity:0; pointer-events:none; transition:opacity 150ms ease}
     .main-area{display:flex; flex-direction:column; min-width:0; overflow:hidden}
 
@@ -112,12 +112,7 @@
     .sysinput:focus{border-color:var(--acc)}
 
     /* JSON Editor */
-    details.raw{margin:0; border-radius:8px; font-size:12px}
-    .left-panel details.raw>summary{padding:.4rem .6rem; font-size:12px}
-    details.raw>summary{cursor:pointer; padding:.6rem .8rem; list-style:none; user-select:none}
-    details.raw>summary::marker{display:none}
-    details.raw[open]>summary{border-bottom:1px solid var(--line)}
-    .raw .inner{padding:.8rem}
+    #rawBox.raw{padding:.5rem; border:1px solid var(--line); border-radius:8px; background:#0c0f15; margin-bottom:.4rem}
     .left-panel .raw textarea{min-height:100px; max-height:200px}
     .left-panel .raw .row button{padding:.3rem .5rem; font-size:12px; height:28px}
     .raw textarea{font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; min-height:220px; white-space:pre; tab-size:2}
@@ -278,24 +273,22 @@
       </div>
     </div>
     <div id="drop" class="drop">Drop a file here to import a chat.<br><span class="hint">Use <b>Import</b> in the footer.</span></div>
-    <details id="rawBox" class="raw">
-      <summary>✎ Edit chat as JSON <span class="badge">(toggle)</span></summary>
-      <div class="inner">
-        <textarea id="jsonEditor" spellcheck="false" placeholder='[ { "role": "system", "content": "..." }, ... ]'></textarea>
-        <div class="row">
-          <button id="jsonApply">Apply (Replace)</button>
-          <button id="jsonAppend" class="secondary">Append</button>
-          <button id="jsonRefresh" class="secondary">Refresh from chat</button>
-          <button id="jsonPretty" class="secondary">Beautify</button>
-          <button id="jsonMinify" class="secondary">Minify</button>
-          <button id="jsonValidate" class="secondary">Validate</button>
-          <span id="jsonStatus" class="badge"></span>
-        </div>
-        <div class="hint" style="margin-top:.25rem">
-          Accepts: <code>[{role,content}]</code> or <code>{ system, messages:[...] }</code> or JSONL (one message per line).
-        </div>
+    <button id="rawToggle" class="secondary" style="width:100%; font-size:12px; margin:.4rem 0">✎ Edit chat as JSON</button>
+    <div id="rawBox" class="raw hidden">
+      <textarea id="jsonEditor" spellcheck="false" placeholder='[ { "role": "system", "content": "..." }, ... ]'></textarea>
+      <div class="row">
+        <button id="jsonApply">Apply (Replace)</button>
+        <button id="jsonAppend" class="secondary">Append</button>
+        <button id="jsonRefresh" class="secondary">Refresh from chat</button>
+        <button id="jsonPretty" class="secondary">Beautify</button>
+        <button id="jsonMinify" class="secondary">Minify</button>
+        <button id="jsonValidate" class="secondary">Validate</button>
+        <span id="jsonStatus" class="badge"></span>
       </div>
-    </details>
+      <div class="hint" style="margin-top:.25rem">
+        Accepts: <code>[{role,content}]</code> or <code>{ system, messages:[...] }</code> or JSONL (one message per line).
+      </div>
+    </div>
     <div class="lp-footer" style="margin-top:auto; border-top:1px solid var(--line); padding-top:.4rem; display:flex; gap:.5rem; align-items:center; font-size:11px; color:var(--muted)">
       <span>v<span id="versionDisplay"></span></span>
       <span>·</span>
@@ -378,6 +371,7 @@
 
     modelStatus: document.getElementById('modelStatus'),
     rawBox: document.getElementById('rawBox'),
+    rawToggle: document.getElementById('rawToggle'),
     jsonEditor: document.getElementById('jsonEditor'),
     jsonApply: document.getElementById('jsonApply'),
     jsonAppend: document.getElementById('jsonAppend'),
@@ -1160,7 +1154,7 @@
       if (assistantBuffer) {
         messages.push({ role: 'assistant', content: assistantBuffer });
       }
-      if (els.rawBox.open) editorDumpFromChat();
+      if (!els.rawBox.classList.contains('hidden')) editorDumpFromChat();
     } catch (err) {
       addMessage('system', `[Error] ${err.message}`); console.error(err);
     } finally {
@@ -1169,7 +1163,7 @@
   }
 
   function stopStream(){ if (abortController) abortController.abort(); }
-  function clearChat(){ messages = []; els.log.innerHTML = ''; els.tokenRate.textContent = ''; if (els.rawBox.open) editorDumpFromChat(); maybeScroll(true); }
+  function clearChat(){ messages = []; els.log.innerHTML = ''; els.tokenRate.textContent = ''; if (!els.rawBox.classList.contains('hidden')) editorDumpFromChat(); maybeScroll(true); }
 
   /* ---------- Import / Export ---------- */
   function exportChat(){
@@ -1206,7 +1200,7 @@
     const reader = new FileReader();
     reader.onload = () => {
       parseImport(String(reader.result || ''))
-        .then(arr => { messages = arr; const sys = messages.find(m=>m.role==='system'); els.system.value = sys?sys.content:''; renderAll(); addMessage('system', `Chat imported (${messages.length} messages).`); if (els.rawBox.open) editorDumpFromChat(); })
+        .then(arr => { messages = arr; const sys = messages.find(m=>m.role==='system'); els.system.value = sys?sys.content:''; renderAll(); addMessage('system', `Chat imported (${messages.length} messages).`); if (!els.rawBox.classList.contains('hidden')) editorDumpFromChat(); })
         .catch(e => addMessage('system', `[Import error] ${e.message}`));
     };
     reader.onerror = () => addMessage('system', `[Import error] Could not read file.`);
@@ -1255,7 +1249,12 @@
   function editorMinify(){ try { const obj = JSON.parse(els.jsonEditor.value || '[]'); els.jsonEditor.value = JSON.stringify(obj); editorSetStatus('minified'); } catch(e){ editorSetStatus('invalid JSON', false);} }
   async function editorValidate(){ try { await editorParseCurrent(); editorSetStatus('valid ✓'); } catch(e){ editorSetStatus(e.message, false); } }
 
-  els.rawBox.addEventListener('toggle', () => { if (els.rawBox.open) editorDumpFromChat(); });
+  if (els.rawToggle) {
+    els.rawToggle.addEventListener('click', () => {
+      els.rawBox.classList.toggle('hidden');
+      if (!els.rawBox.classList.contains('hidden')) editorDumpFromChat();
+    });
+  }
   els.jsonRefresh.addEventListener('click', editorDumpFromChat);
   els.jsonApply.addEventListener('click', editorReplace);
   els.jsonAppend.addEventListener('click', editorAppend);
