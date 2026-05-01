@@ -251,7 +251,7 @@
     <div class="lp-top">
       <button id="panelToggle" class="lp-toggle" title="Toggle settings panel" aria-label="Toggle settings panel">☰</button>
       <div class="lp-brand">
-        <div class="title"><a href="https://github.com/PieBru/StatelessChatUI" target="_blank" rel="noopener" style="color:inherit; text-decoration:none">💬 StatelessChatUI</a></div>
+        <div class="title">💬 StatelessChatUI</div>
       </div>
     </div>
     <div class="lp-controls">
@@ -329,15 +329,6 @@
         <div style="min-width:260px; align-self:end; display:flex; align-items:center; gap:.6rem; flex-wrap:wrap">
           <label class="small">Temperature <span id="tempVal" class="hint">0.7</span></label>
           <input id="temp" type="range" min="0" max="2" step="0.1" value="0.7" style="width:160px">
-          <label class="small">top_p<br>
-            <input id="top_p" type="number" inputmode="decimal" step="0.01" min="0" max="1" placeholder="(default)" style="width:9ch; text-align:right">
-          </label>
-          <label class="small">min_p<br>
-            <input id="min_p" type="number" inputmode="decimal" step="0.01" min="0" max="1" placeholder="(default)" style="width:9ch; text-align:right">
-          </label>
-          <label class="small">top_k<br>
-            <input id="top_k" type="number" step="1" min="0" placeholder="(default)" style="width:9ch; text-align:right">
-          </label>
         </div>
       </div>
     </div>
@@ -390,9 +381,7 @@
     panelToggle: document.getElementById('panelToggle'),
     leftPanel: document.querySelector('.left-panel'),
     // NEU:
-    top_p: document.getElementById('top_p'),
-    min_p: document.getElementById('min_p'),
-    top_k: document.getElementById('top_k'),
+
   };
 
   let messages = [];
@@ -947,31 +936,8 @@
 
       const outEl = addMessage('assistant', '');
 
-      // NEU: optionale Sampling-Parameter nur mitsenden, wenn gesetzt
-      function parseOptionalFloat(el, min, max) {
-        const v = (el?.value ?? '').trim();
-        if (v === '') return null;
-        const num = parseFloat(v);
-        if (Number.isNaN(num)) return null;
-        if (typeof min === 'number' && num < min) return null;
-        if (typeof max === 'number' && num > max) return null;
-        return num;
-      }
-      function parseOptionalInt(el, min) {
-        const v = (el?.value ?? '').trim();
-        if (v === '') return null;
-        const num = parseInt(v, 10);
-        if (Number.isNaN(num)) return null;
-        if (typeof min === 'number' && num < min) return null;
-        return num;
-      }
+
       const extras = {};
-      const _top_p = parseOptionalFloat(els.top_p, 0, 1);
-      const _min_p = parseOptionalFloat(els.min_p, 0, 1);
-      const _top_k = parseOptionalInt(els.top_k, 0);
-      if (_top_p !== null) extras.top_p = _top_p;
-      if (_min_p !== null) extras.min_p = _min_p;
-      if (_top_k !== null) extras.top_k = _top_k;
 
       const body = { model: els.model.value.trim(), messages, stream: true, temperature: parseFloat(els.temp.value), ...extras };
       const headers = { 'Content-Type': 'application/json', 'Accept': 'text/event-stream' };
