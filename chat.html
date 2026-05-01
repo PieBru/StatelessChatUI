@@ -10,13 +10,35 @@
     html,body{height:100%}
     body{margin:0; font:14px/1.45 system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Helvetica, Arial; background:var(--bg); color:var(--ink)}
     .wrap{display:grid; grid-template-rows:auto 1fr auto; height:100%}
-    header, footer{background:var(--panel);}
-    header{display:flex; gap:.75rem; align-items:flex-end; flex-wrap:wrap; padding:.6rem .8rem; position:sticky; top:0; z-index:10; border-bottom:1px solid var(--line)}
-    header .title{font-weight:600; letter-spacing:.2px}
+    /* ---------- Layout: left panel + main area ---------- */
+    .wrap{display:grid; grid-template-columns:280px 1fr; grid-template-rows:1fr; height:100%}
+    .left-panel{background:var(--panel); border-right:1px solid var(--line); display:flex; flex-direction:column; padding:.6rem; overflow-y:auto; overflow-x:hidden; transition:width 300ms ease; width:280px}
+    .left-panel.collapsed{width:40px}
+    .main-area{display:flex; flex-direction:column; min-width:0; overflow:hidden}
 
-    header .brand{display:flex; flex-direction:column; gap:.15rem; align-items:flex-start}
-    header .promo{font-size:12px; color:var(--acc); text-decoration:none; opacity:.9}
-    header .promo:hover{opacity:1; text-decoration:underline}
+    /* Left panel internals */
+    .lp-brand{display:flex; flex-direction:column; gap:.15rem; align-items:flex-start; padding-bottom:.5rem; border-bottom:1px solid var(--line); margin-bottom:.5rem}
+    .lp-brand .title{font-weight:600; letter-spacing:.2px}
+    .lp-brand .promo{font-size:12px; color:var(--acc); text-decoration:none; opacity:.9}
+    .lp-brand .promo:hover{opacity:1; text-decoration:underline}
+
+    .lp-controls{display:flex; flex-direction:column; gap:.5rem; flex:1}
+    .lp-controls label.small{display:flex; flex-direction:column; gap:.25rem; align-items:flex-start}
+    .lp-controls input{background:#0c0f15; color:var(--ink); border:1px solid var(--line); padding:.45rem .5rem; border-radius:.5rem; outline:none; width:100%; height:32px}
+    .lp-controls input:focus{border-color:var(--acc)}
+    .lp-controls select{background:#0c0f15; color:var(--ink); border:1px solid var(--line); padding:.45rem .5rem; border-radius:.5rem; outline:none; width:100%; height:32px; appearance:none}
+    .lp-controls select:focus{border-color:var(--acc)}
+    .lp-controls .small{font-size:12px; color:var(--muted)}
+    .lp-controls .row{display:flex; gap:.4rem; align-items:center; flex-wrap:wrap}
+    .lp-controls button{height:32px; display:inline-flex; align-items:center; padding:.45rem .65rem; font-size:13px}
+    .lp-controls .secondary{background:#0c0f15}
+    .lp-controls #tokenRate{font-size:12px; color:var(--muted); width:100%; text-align:right}
+
+    /* Toggle button */
+    .panel-toggle{position:fixed; top:.5rem; left:.5rem; z-index:50; width:36px; height:36px; display:flex; align-items:center; justify-content:center; background:var(--panel); border:1px solid var(--line); border-radius:.5rem; cursor:pointer; font-size:18px; color:var(--ink); transition:left 300ms ease, opacity 200ms ease}
+    .left-panel:not(.collapsed) ~ .main-area .panel-toggle{left:284px}
+    .left-panel.collapsed ~ .main-area .panel-toggle{left:.5rem}
+    .panel-toggle:hover{border-color:var(--acc)}
 
     /* Info dialog */
     dialog.info-dialog{
@@ -35,24 +57,14 @@
     .info-body a{color:var(--acc); text-decoration:none}
     .info-body a:hover{text-decoration:underline}
     .info-actions{display:flex; justify-content:flex-end; gap:.5rem}
-    header .spacer{flex:1}
-    header input{background:#0c0f15; color:var(--ink); border:1px solid var(--line); padding:.45rem .5rem; border-radius:.5rem; outline:none; width:22ch; height:32px}
-    header input:focus{border-color:var(--acc)}
-    header select{
-      background:#0c0f15;
-      color:var(--ink);
-      border:1px solid var(--line);
-      padding:.45rem .5rem;
-      border-radius:.5rem;
-      outline:none;
-      width:22ch;
-      height:32px;
-      appearance:none;
-    }
-    header select:focus{border-color:var(--acc)}
-    header .small{font-size:12px; color:var(--muted)}
-    header label.small{display:flex; flex-direction:column; gap:.25rem; align-items:flex-start}
-    header .row{display:flex; gap:.5rem; align-items:flex-end; flex-wrap:wrap}
+
+
+
+
+
+
+
+
 
     /* Scroll-Viewport (smooth nur für User-Scroll, programmatisch erzwingen wir 'auto') */
     main#scroller{overflow:auto; padding:1rem 1rem 1.5rem; scroll-behavior:smooth}
@@ -62,7 +74,7 @@
     .user .avatar{background:#20314a}
     .bot .avatar{background:#1b2d20}
     .sys .avatar{background:#2a223b}
-    
+
     /* Wrapper für den Nachrichteninhalt */
     .message-content-wrapper {
         display:flex;
@@ -80,7 +92,7 @@
     textarea:focus{border-color:var(--acc)}
     button{background:#101827; color:var(--ink); border:1px solid var(--line); padding:.55rem .85rem; border-radius:.6rem; cursor:pointer}
     button:hover{border-color:var(--acc)}
-    header button{height:32px; display:inline-flex; align-items:center}
+
     .secondary{background:#0c0f15}
     .muted{color:var(--muted)}
     .hidden{display:none}
@@ -128,7 +140,7 @@
     /* Scroll-to-bottom button */
     .to-bottom{position:fixed; right:16px; bottom:16px; padding:.5rem .7rem; border-radius:.6rem; background:#101827; border:1px solid var(--line); color:var(--ink); display:none; opacity:.92}
     .to-bottom.show{display:block}
-    
+
     /* STYLES FÜR THINKING-BOX */
     .think-bubble {
         width: 100%;
@@ -154,7 +166,7 @@
         border-top: 1px solid #3c324f;
         color: #c0b8d1;
     }
-	/* — Polishing: Sampling-Inputs im Einstellungs-Panel — */
+	/* - Polishing: Sampling-Inputs im Einstellungs-Panel - */
 #settingsPanel .small {               /* Label + Feld vertikal, kompakt */
   display: flex;
   flex-direction: column;
@@ -205,18 +217,19 @@
   flex-wrap: wrap;
 }
 
-  
+
     /* ---------- Responsive ---------- */
     @media (max-width: 980px){
-      header{gap:.6rem}
-      header .spacer{display:none}
-      header label.small{min-width:200px}
-      header .row{width:100%}
-      header #tokenRate{width:auto; text-align:left !important}
+      .wrap{grid-template-columns:240px 1fr}
+      .left-panel{width:240px}
+      .left-panel.collapsed{width:36px}
+      .left-panel:not(.collapsed) ~ .main-area .panel-toggle{left:244px}
     }
     @media (max-width: 720px){
-      header label.small{flex:1 1 220px}
-      header input, header select{width:100%}
+      .wrap{grid-template-columns:200px 1fr}
+      .left-panel{width:200px}
+      .left-panel.collapsed{width:36px}
+      .left-panel:not(.collapsed) ~ .main-area .panel-toggle{left:204px}
       main#scroller{padding:.85rem .75rem 1.25rem}
       .bar{grid-template-columns:1fr}
       footer .row{flex-wrap:wrap}
@@ -227,12 +240,13 @@
       #settingsPanel > div > div:last-child{min-width:0 !important; align-self:start !important}
     }
     @media (max-width: 480px){
-      header label.small{flex:1 1 100%}
-      header .row{gap:.4rem}
-      header button, footer button{padding:.5rem .75rem}
+      .left-panel{width:36px; padding:.4rem}
+      .left-panel.collapsed{width:36px}
+      .lp-controls input, .lp-controls select{width:100%}
+      footer button{padding:.5rem .75rem}
     }
 
-  
+
     /* Attachments */
     .chip{
       display:inline-flex; align-items:center; gap:.45rem;
@@ -254,37 +268,41 @@
 </head>
 <body>
 <div class="wrap">
-  <header>
-    <div class="brand">
-    <div class="title">💬 StatelessChatUI</div>
-    <a class="promo" href="https://www.promptinjection.net/" target="_blank" rel="noopener">PromptInjection.net</a>
-  </div>
-    <div class="spacer"></div>
-    <label class="small"><span>API Base</span>
-      <input id="apiBase" value="http://127.0.0.1:8080/v1" />
-    </label>
-    <label class="small"><span>Model</span>
-      <select id="model">
-        <option value="" selected disabled>— Load models —</option>
-      </select>
-    </label>
-    <label class="small"><span>API Key</span>
-      <input id="apiKey" type="password" autocomplete="new-password" value="" placeholder="optional" />
-    </label>
-    <div class="row">
-      <button id="importBtn" title="Import chat">Import</button>
-      <input id="importFile" type="file" accept="application/json,.json,.jsonl" class="hidden" />
-      <button id="exportBtn" title="Export chat">Export</button>
-      <button id="loadModelsBtn" class="secondary" title="GET /v1/models">Load models</button>
-      <button id="infoBtn" class="secondary" title="Info">Info</button>
-      <span id="modelStatus" class="small"></span>
+  <nav class="left-panel">
+    <div class="lp-brand">
+      <div class="title">💬 StatelessChatUI</div>
+      <a class="promo" href="https://www.promptinjection.net/" target="_blank" rel="noopener">PromptInjection.net</a>
     </div>
-    <div class="row">
-        <div id="tokenRate" class="small" style="width:12ch; text-align:right;"></div>
+    <div class="lp-controls">
+      <label class="small"><span>API Base</span>
+        <input id="apiBase" value="http://127.0.0.1:8080/v1" />
+      </label>
+      <label class="small"><span>Model</span>
+        <select id="model">
+          <option value="" selected disabled>— Load models —</option>
+        </select>
+      </label>
+      <label class="small"><span>API Key</span>
+        <input id="apiKey" type="password" autocomplete="new-password" value="" placeholder="optional" />
+      </label>
+      <div class="row">
+        <button id="importBtn" title="Import chat">Import</button>
+        <input id="importFile" type="file" accept="application/json,.json,.jsonl" class="hidden" />
+        <button id="exportBtn" title="Export chat">Export</button>
+        <button id="loadModelsBtn" class="secondary" title="GET /v1/models">Load models</button>
+        <button id="infoBtn" class="secondary" title="Info">Info</button>
+        <span id="modelStatus" class="small"></span>
+      </div>
+      <div class="row">
+          <div id="tokenRate"></div>
+      </div>
     </div>
-  </header>
+  </nav>
 
-  <main id="scroller">
+  <div class="main-area">
+    <button id="panelToggle" class="panel-toggle" title="Toggle settings panel" aria-label="Toggle settings panel">☰</button>
+
+    <main id="scroller">
     <div id="drop" class="drop">Drop a file here to import a chat (JSON in the usual <code>[{role, content}]</code> format).<br><span class="hint">Or click <b>Import</b> above.</span></div>
 
     <details id="rawBox" class="raw">
@@ -311,7 +329,7 @@
 
   <footer>
     <div class="bar">
-      <textarea id="input" placeholder="Type a message… (Send: Ctrl/⌘+Enter)"></textarea>
+      <textarea id="input" placeholder="Type a message... (Send: Ctrl/⌘+Enter)"></textarea>
       <div class="row" style="display:flex; gap:.6rem; align-items:center">
         <button id="attachBtn" class="secondary" title="Attach files">📎</button>
         <input id="attachInput" type="file" class="hidden" multiple />
@@ -328,7 +346,7 @@
       <div style="max-width:900px; margin:0 auto; display:grid; grid-template-columns:1fr auto; gap:.6rem; grid-column:1/-1; width:100%">
         <div>
           <label class="small" style="display:block; margin-bottom:.35rem">System prompt</label>
-          <textarea id="system" class="sysinput" rows="2" placeholder="Optional — e.g. You are a helpful assistant."></textarea>
+          <textarea id="system" class="sysinput" rows="2" placeholder="Optional - e.g. You are a helpful assistant."></textarea>
         </div>
         <div style="min-width:260px; align-self:end; display:flex; align-items:center; gap:.6rem; flex-wrap:wrap">
           <label class="small">Temperature <span id="tempVal" class="hint">0.7</span></label>
@@ -346,9 +364,9 @@
       </div>
     </div>
   </footer>
-</div>
+  </div>
 
-<button id="toBottom" class="to-bottom" title="Jump to bottom">▼ Bottom</button>
+  <button id="toBottom" class="to-bottom" title="Jump to bottom">▼ Bottom</button>
 
 <dialog id="infoDialog" class="info-dialog">
   <form method="dialog" class="info-card">
@@ -361,7 +379,7 @@
       <div><span class="muted">Project URL:</span> <a id="infoProjectUrl" href="https://example.com/statelesschatui" target="_blank" rel="noopener">https://example.com/statelesschatui</a></div>
       <div><span class="muted">AI Blog:</span> <a href="https://www.promptinjection.net/" target="_blank" rel="noopener">PromptInjection.net</a></div>
       <div><span class="muted">Imprint:</span> <a id="infoImprint" href="http://www.locallightai.com/imprint" target="_blank" rel="noopener">http://www.locallightai.com/imprint</a></div>
-      <div class="muted" style="margin-top:.6rem; font-size:12px">Stateless UI — no server-side chat storage.</div>
+      <div class="muted" style="margin-top:.6rem; font-size:12px">Stateless UI - no server-side chat storage.</div>
     </div>
     <div class="info-actions">
       <button value="close">Close</button>
@@ -413,6 +431,9 @@
     infoVersion: document.getElementById('infoVersion'),
     infoProjectUrl: document.getElementById('infoProjectUrl'),
     infoImprint: document.getElementById('infoImprint'),
+    // Panel toggle:
+    panelToggle: document.getElementById('panelToggle'),
+    leftPanel: document.querySelector('.left-panel'),
     // NEU:
     top_p: document.getElementById('top_p'),
     min_p: document.getElementById('min_p'),
@@ -542,7 +563,7 @@
   const APP_VERSION = '1.01';
   const PROJECT_URL = 'https://www.locallightai.com/scu';
   const IMPRINT_URL = 'https://www.srware.net/imprint';
-  
+
   let streamStartTime = 0;
   let lastUpdateTime = 0;
   let finalCompletionTokens = 0;
@@ -622,23 +643,23 @@
         html += `<blockquote><p>${quoteText.replace(/\n/g, '<br />')}</p></blockquote>`;
         continue;
       }
-      
+
       // --- START: Table Parsing ---
       const isTableLine = (l) => l.includes('|');
       const isSeparatorLine = (l) => /^\s*\|?([-:]+\|)+[-:]+\|?\s*$/.test(l.trim());
-      
+
       if (isTableLine(line) && i + 1 < lines.length && isSeparatorLine(lines[i + 1])) {
         closeList();
         html += '<table>';
-        
+
         // Header
         const headers = line.split('|').map(h => h.trim()).slice(1, -1);
         html += '<thead><tr>';
         headers.forEach(h => { html += `<th>${inlineMd(esc(h))}</th>`; });
         html += '</tr></thead>';
-        
+
         i += 2; // Skip header und separator line
-        
+
         // Body
         html += '<tbody>';
         while (i < lines.length && isTableLine(lines[i])) {
@@ -654,7 +675,7 @@
             i++;
         }
         i--;
-        
+
         html += '</tbody></table>';
         continue;
       }
@@ -694,7 +715,7 @@
   function renderBubbleContent(el, role, content){
     el.classList.add('md'); el.innerHTML = mdToHtml(normalizeContent(content)); enhanceCodeCopy(el);
   }
-  
+
   function addMessage(role, content) {
     const cls = role === 'user' ? 'user' : role === 'system' ? 'sys' : 'bot';
     const avatar = role === 'user' ? '🧑' : role === 'system' ? '⚙️' : '🤖';
@@ -714,7 +735,7 @@
     if (!isRendering) maybeScroll();
     return contentEl;
   }
-  
+
   function addThinkBubble(assistantContentEl) {
     const wrapper = assistantContentEl.closest('.message-content-wrapper');
     const bubble = wrapper.querySelector('.bubble');
@@ -733,6 +754,34 @@
   }
 
   function setStreamingState(active) { els.sendBtn.disabled = active; els.stopBtn.disabled = !active; els.input.disabled = active; }
+
+  /* ---------- Left Panel Toggle ---------- */
+  function getPanelState() {
+    try { return localStorage.getItem('scu_panel_state') === 'open'; } catch { return false; }
+  }
+  function setPanelState(open) {
+    try { localStorage.setItem('scu_panel_state', open ? 'open' : 'collapsed'); } catch {}
+  }
+  function initPanel() {
+    if (!els.panelToggle || !els.leftPanel) return;
+    const isOpen = getPanelState();
+    els.leftPanel.classList.toggle('collapsed', !isOpen);
+    els.panelToggle.textContent = isOpen ? '✕' : '☰';
+    els.panelToggle.addEventListener('click', () => {
+      els.leftPanel.classList.toggle('collapsed');
+      const collapsed = els.leftPanel.classList.contains('collapsed');
+      els.panelToggle.textContent = collapsed ? '☰' : '✕';
+      setPanelState(!collapsed);
+    });
+    // Escape key closes panel
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && !els.leftPanel.classList.contains('collapsed')) {
+        els.leftPanel.classList.add('collapsed');
+        els.panelToggle.textContent = '☰';
+        setPanelState(false);
+      }
+    });
+  }
 
   function renderAll(){
     isRendering = true;
@@ -774,7 +823,7 @@
     }
     return out;
   }
-    
+
   function updateTokenRate(buffer, forceFinal = false) {
     const now = performance.now();
     if (!forceFinal && now - lastUpdateTime < UPDATE_INTERVAL) return;
@@ -832,7 +881,7 @@
     const key = (els.apiKey.value || '').trim();
     if (key) headers['Authorization'] = `Bearer ${key}`;
 
-    if (els.modelStatus) els.modelStatus.textContent = 'Loading…';
+    if (els.modelStatus) els.modelStatus.textContent = 'Loading...';
     if (els.loadModelsBtn) els.loadModelsBtn.disabled = true;
 
     try {
@@ -890,10 +939,10 @@
       if (!ensureApiBaseAllowed()) return;
 
       if (!els.model.value) {
-        addMessage('system', '[Hint] No model selected — click “Load models”, then choose one.');
+        addMessage('system', '[Hint] No model selected - click "Load models", then choose one.');
         return;
       }
-      
+
       els.tokenRate.textContent = '';
       finalCompletionTokens = 0;
       streamStartTime = 0;
@@ -980,18 +1029,18 @@
       // --- START ÄNDERUNG: CORS hinzugefügt ---
       const res = await fetch(url, { method: 'POST', headers, body: JSON.stringify(body), signal: abortController.signal, mode: 'cors' });
       // --- ENDE ÄNDERUNG ---
-      
+
       if (!res.ok) { const t = await res.text().catch(()=> ''); throw new Error(`HTTP ${res.status}: ${t || 'Server error'}`); }
-      
+
       const ctype = (res.headers.get('content-type') || '').toLowerCase();
       if (!ctype.includes('text/event-stream')) {
         const requestStartTime = performance.now();
-        const raw = await res.text(); 
+        const raw = await res.text();
         if (!raw) throw new Error('Empty response (status OK, but no content).');
-        
+
         streamStartTime = requestStartTime;
         let data; try{ data = JSON.parse(raw);}catch{ throw new Error(`Unerwartetes Format: ${raw.slice(0,200)}...`); }
-        
+
         let fullContent = data?.choices?.[0]?.message?.content ?? '';
         const reasoningContent = data?.choices?.[0]?.message?.reasoning_content;
 
@@ -1013,19 +1062,19 @@
                 assistantBuffer = fullContent;
             }
         }
-        
+
         renderBubbleContent(outEl, 'assistant', assistantBuffer);
-        
+
         finalCompletionTokens = data?.usage?.completion_tokens || 0;
         updateTokenRate(assistantBuffer + thinkBuffer, true);
-        
+
         maybeScroll();
       } else {
         // --- OPTIMIERUNG START ---
         let renderScheduled = false;
         let assistantNeedsRender = false;
         let thinkNeedsRender = false;
-        const RENDER_INTERVAL = 150; 
+        const RENDER_INTERVAL = 150;
 
         const scheduleRender = () => {
             if (renderScheduled) return;
@@ -1062,25 +1111,25 @@
               const dataStr = line.slice(5).trim(); if (dataStr === '[DONE]') { done = true; break; }
               try {
                 const obj = JSON.parse(dataStr);
-                
+
                 if (obj?.usage?.completion_tokens) {
                     finalCompletionTokens = obj.usage.completion_tokens;
                 }
-                
+
                 const delta = obj?.choices?.[0]?.delta;
                 if (!delta) continue;
 
                 let hasUpdated = false;
-                
+
                 const reasoningChunk = delta.reasoning || delta.reasoning_content || '';
-                
+
                 if (reasoningChunk) {
                     if (!thinkEl) thinkEl = addThinkBubble(outEl);
                     thinkBuffer += reasoningChunk;
-                    thinkNeedsRender = true; 
+                    thinkNeedsRender = true;
                     hasUpdated = true;
                 }
-                
+
                 const contentChunk = delta.content || '';
                 if (contentChunk) {
                     let tempChunk = contentChunk;
@@ -1091,40 +1140,40 @@
                                 thinkBuffer += tempChunk.substring(0, endPos);
                                 tempChunk = tempChunk.substring(endPos + 8);
                                 inThinkBlock = false;
-                                thinkNeedsRender = true; 
+                                thinkNeedsRender = true;
                             } else {
                                 thinkBuffer += tempChunk;
                                 tempChunk = '';
-                                thinkNeedsRender = true; 
+                                thinkNeedsRender = true;
                             }
                         } else {
                             const startPos = tempChunk.indexOf('<think>');
                             if (startPos !== -1) {
                                 assistantBuffer += tempChunk.substring(0, startPos);
-                                assistantNeedsRender = true; 
+                                assistantNeedsRender = true;
                                 if (!thinkEl) thinkEl = addThinkBubble(outEl);
                                 const restOfChunk = tempChunk.substring(startPos + 7);
                                 const endPosInRest = restOfChunk.indexOf('</think>');
                                 if (endPosInRest !== -1) {
                                     thinkBuffer += restOfChunk.substring(0, endPosInRest);
                                     tempChunk = restOfChunk.substring(endPosInRest + 8);
-                                    thinkNeedsRender = true; 
+                                    thinkNeedsRender = true;
                                 } else {
                                     thinkBuffer += restOfChunk;
                                     tempChunk = '';
                                     inThinkBlock = true;
-                                    thinkNeedsRender = true; 
+                                    thinkNeedsRender = true;
                                 }
                             } else {
                                 assistantBuffer += tempChunk;
-                                assistantNeedsRender = true; 
+                                assistantNeedsRender = true;
                                 tempChunk = '';
                             }
                         }
                     }
                     hasUpdated = true;
                 }
-                
+
                 if (hasUpdated) {
                   scheduleRender();
                   if (streamStartTime > 0) updateTokenRate(assistantBuffer + thinkBuffer);
@@ -1136,12 +1185,12 @@
         // Finales Rendering am Ende des Streams, um sicherzustellen, dass alles angezeigt wird
         renderBubbleContent(outEl, 'assistant', assistantBuffer);
         if (thinkEl) renderBubbleContent(thinkEl, 'system', thinkBuffer);
-        
+
         if (streamStartTime > 0) updateTokenRate(assistantBuffer + thinkBuffer, true);
-        
+
         maybeScroll();
       }
-      
+
       assistantBuffer = assistantBuffer.trim();
       if (assistantBuffer) {
         messages.push({ role: 'assistant', content: assistantBuffer });
@@ -1221,7 +1270,7 @@
       renderAll();
       isRendering = false;
       autoscroll = true;
-      editorSetStatus(`applied (replace) — ${messages.length} messages`);
+      editorSetStatus(`applied (replace) - ${messages.length} messages`);
       addMessage('system', `Chat set from JSON (${messages.length})`);
     } catch(e){ editorSetStatus(e.message,false); addMessage('system', `[JSON error] ${e.message}`); }
   }
@@ -1233,7 +1282,7 @@
       renderAll();
       isRendering = false;
       autoscroll = true;
-      editorSetStatus(`applied (append) — now ${messages.length} messages`);
+      editorSetStatus(`applied (append) - now ${messages.length} messages`);
       addMessage('system', `Chat appended from JSON (+${arr.length})`);
     } catch(e){ editorSetStatus(e.message,false); addMessage('system', `[JSON error] ${e.message}`); }
   }
@@ -1292,6 +1341,9 @@
       if (e.target === els.infoDialog) els.infoDialog.close();
     });
   }
+
+  /* ---------- Panel init ---------- */
+  initPanel();
 
   /* ---------- Welcome ---------- */
   addMessage('system', 'Ready. CORS mode enabled. <think>, reasoning and reasoning_content supported. Import/Export + Markdown + JSON editor + auto-scroll enabled. Load models via /v1/models.');
