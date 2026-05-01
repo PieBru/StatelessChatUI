@@ -79,7 +79,7 @@
     .muted{color:var(--muted)}
     .hidden{display:none}
     .hint{font-size:12px; color:var(--muted); margin-left:.25rem}
-    .drop{border:2px dashed #2a3346; border-radius:12px; padding:12px; text-align:center; color:var(--muted); max-width:900px; margin:1rem auto .75rem;}
+    .drop{border:1px dashed #2a3346; border-radius:8px; padding:8px; text-align:center; font-size:12px; color:var(--muted); margin:.4rem 0}
     .drop.drag{background:#0e1320; color:var(--ink)}
     code, pre, kbd{font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace}
 
@@ -110,11 +110,14 @@
     .sysinput:focus{border-color:var(--acc)}
 
     /* JSON Editor */
-    details.raw{max-width:900px; margin:1rem auto 0; border:1px solid var(--line); border-radius:10px; background:#0c0f15}
+    details.raw{margin:0; border-radius:8px; font-size:12px}
+    .left-panel details.raw>summary{padding:.4rem .6rem; font-size:12px}
     details.raw>summary{cursor:pointer; padding:.6rem .8rem; list-style:none; user-select:none}
     details.raw>summary::marker{display:none}
     details.raw[open]>summary{border-bottom:1px solid var(--line)}
     .raw .inner{padding:.8rem}
+    .left-panel .raw textarea{min-height:100px; max-height:200px}
+    .left-panel .raw .row button{padding:.3rem .5rem; font-size:12px; height:28px}
     .raw textarea{font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; min-height:220px; white-space:pre; tab-size:2}
     .raw .row{display:flex; gap:.5rem; align-items:center; margin-top:.5rem; flex-wrap:wrap}
     .badge{font-size:12px; color:var(--muted)}
@@ -274,12 +277,7 @@
           <div id="tokenRate"></div>
       </div>
     </div>
-  </nav>
-
-  <div class="main-area">
-    <main id="scroller">
-    <div id="drop" class="drop">Drop a file here to import a chat (JSON in the usual <code>[{role, content}]</code> format).<br><span class="hint">Or click <b>Import</b> above.</span></div>
-
+    <div id="drop" class="drop">Drop a file here to import a chat.<br><span class="hint">Use <b>Import</b> in the footer.</span></div>
     <details id="rawBox" class="raw">
       <summary>✎ Edit chat as JSON <span class="badge">(toggle)</span></summary>
       <div class="inner">
@@ -298,7 +296,10 @@
         </div>
       </div>
     </details>
+  </nav>
 
+  <div class="main-area">
+    <main id="scroller">
     <div id="log" class="log"></div>
   </main>
 
