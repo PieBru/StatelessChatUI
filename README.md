@@ -1,142 +1,123 @@
 # StatelessChatUI
 
-Minimalist, stateless chat interface for LLM APIs with native support for extended thinking and streaming. Perfect for debugging, testing, and portable scenarios.
+A single HTML file. Zero dependencies. No build tools. No server. Just open it in a browser and chat with any OpenAI-compatible LLM API.
 
-## Concept
+## Philosophy
 
-StatelessChatUI operates as a pure client-side application without backend infrastructure. All conversation logic remains in the browser, with API calls executed directly from the client. The interface implements complete control over conversation state with granular manipulability via integrated JSON editor.
+StatelessChatUI is built on a single conviction: **the simplest possible tool that does the job well**. Everything in this project flows from that principle:
 
-The architecture eliminates server dependencies entirely – the HTML document functions as an autonomous unit requiring only network access to the target API. This reduces deployment complexity to serving a single static file.
+- **One file.** The entire application is `chat.html` — HTML + CSS + JavaScript, all inline. No external assets, no imports, no packages.
+- **No build pipeline.** No bundlers, no transpilers, no package managers. If it runs in a modern browser, it works.
+- **No server.** All conversation logic lives in the browser. API calls go directly from client to LLM endpoint. There is no backend, no database, no persistent storage beyond what the browser provides.
+- **Dark-mode-first.** The interface defaults to dark with minimal visual clutter. Content takes priority over chrome.
 
-## Features
+This isn't a framework or a platform. It's a tool you open, use, and close — then do it again tomorrow, on any machine, with zero setup.
 
-**Core Capabilities**
-- Streaming-based response processing with delta accumulation
-- Native interpretation of `<thinking>` tags and `reasoning`/`reasoning_content` content blocks
-- Complete message history control via integrated JSON editor
-- CORS-compatible direct connection to OpenAI-compatible APIs
-- File/Vision support for multimodal LLM
-- Import/export mechanisms for conversation persistence (JSON/JSONL)
+## Deployment
 
-**UI/UX Design**
-- Dark-mode-first with minimal visual redundancy
-- Collapsible extended thinking display (reasoning steps remain hidden until explicitly requested)
-- Markdown rendering with syntax highlighting
-- Token rate metrics during streaming operations
-- Auto-scroll logic with manual override option
-
-**Model Management**
-- Dynamic loading of available models via `/v1/models` endpoint
-- Temperature control (0.0 – 2.0)
-- Max token limitation
-- System prompt configuration with conversation persistence
-
-**Developer Tools**
-- Live JSON editor for direct state access
-- Validation, beautification, minification of message history
-- Append/replace modes for JSON-based message injection
-- Drag-and-drop import
-
-## Technical Specification
-
-- **Dependencies:** None. Pure vanilla JavaScript.
-- **Size:** Single-file deployment, ~47KB uncompressed
-- **Browser Requirements:** Modern ES6+ support, Fetch API, Dialog element
-- **API Compatibility:** OpenAI Chat Completion v1 spec
-
-## Usage
-
-### Local Execution
-
-The simplest approach is opening the HTML file directly in your browser:
+**That's it.** Copy `chat.html` anywhere — your desktop, a USB stick, a web server — and open it in a browser. The file is self-contained and requires nothing else.
 
 ```bash
-# Direct filesystem execution (no server required)
+# That's the entire deployment process:
 open chat.html
-# or double-click the file in your file manager
 ```
 
-For scenarios requiring CORS compatibility or advanced testing, optional web server deployment:
+Optional: if the target API enforces CORS restrictions, you can serve the file from any static server (the app itself doesn't care):
 
 ```bash
-# Option 1: Python HTTP Server
 python -m http.server 8000
-
-# Option 2: Node.js HTTP Server
+# or
 npx http-server -p 8000
 ```
 
+But even this is unnecessary for APIs that allow cross-origin requests — which includes most OpenAI-compatible services and local inference servers.
+
+## Features
+
+**Chat**
+- Streaming responses with delta accumulation (SSE)
+- Native support for extended thinking: `<thinking>` tags, `reasoning_content`, and `thinking` content blocks
+- Collapsible reasoning display — reasoning steps stay hidden until you expand them
+- Markdown rendering with syntax highlighting
+- Token rate metrics during streaming
+
+**Conversation Control**
+- Full message history manipulation via integrated JSON editor
+- Append or replace messages directly
+- Import/export conversations as JSON or JSONL
+- Drag-and-drop import
+
+**API Integration**
+- OpenAI Chat Completion v1 spec (`/v1/chat/completions` with SSE)
+- Dynamic model loading via `/v1/models` endpoint
+- Temperature control (0.0 – 2.0), max tokens, system prompt configuration
+- File/vision support for multimodal LLMs
+- Auto-detection of o1 models (disables system prompts per API constraints)
+
+## Technical Specification
+
+| Aspect | Detail |
+|--------|--------|
+| **Architecture** | Single HTML file, no dependencies |
+| **Size** | ~56 KB uncompressed (`chat.html`) |
+| **Language** | Vanilla ES6+ JavaScript |
+| **Dependencies** | None — zero external libraries |
+| **Browser** | Modern ES6+ (ES2020+ recommended) |
+| **API** | OpenAI Chat Completion v1 spec |
+
+## Usage
+
 ### API Configuration
 
-Set base URL and API key in the header section:
+Set the base URL and optional API key in the header:
 
-1. **Base URL:** API endpoint (e.g., `https://api.openai.com/v1`, `http://localhost:11434/v1`)
-2. **API Key:** Optional depending on provider (OpenAI: required, local inference: often not required)
-3. **Model Selection:** Either manual input or automatic loading via "Load Models"
-
-The app automatically detects o1 models and disables system prompts according to API constraints.
+1. **Base URL** — your LLM endpoint (e.g., `https://api.openai.com/v1`, `http://localhost:11434/v1`)
+2. **API Key** — required for OpenAI, often not needed for local inference
+3. **Model** — type manually or click "Load Models" to fetch from `/v1/models`
 
 ### Conversation Management
 
-**JSON Editor Access:**
-- Open "Raw JSON Editor" below the chat log
-- Manipulate message history directly
-- Use "Apply (Replace)" for complete state override
-- Use "Apply (Append)" for message injection
-
-**Import/Export:**
-- Export: Download as timestamped JSON
-- Import: Drag & drop or file picker
-- Format: Standard OpenAI messages array or custom wrapper with top-level `system`
-
-## Extended Thinking Support
-
-The interface interprets three thinking formats:
-
-1. **XML Tags:** `<thinking>...</thinking>` (legacy format, some models)
-2. **Content Blocks:** `{type: "reasoning_content", ...}` (structured, primary format)
-3. **Named Content Blocks:** `{type: "thinking", ...}` (deprecated but supported)
-
-Reasoning steps appear in collapsible detail elements above the final response. The logic aggregates thinking fragments during streaming and renders them incrementally.
+- **JSON Editor:** Open "Raw JSON Editor" below the chat log to inspect or manipulate message history directly. Use "Apply (Replace)" to override or "Apply (Append)" to inject messages.
+- **Import/Export:** Export downloads a timestamped JSON file. Import via drag-and-drop or file picker. Supports standard OpenAI message arrays and custom wrappers with a top-level `system` field.
 
 ## API Compatibility
 
-**Tested with:**
-- OpenAI Compatible Public API Services
-- Local inference (llama.cpp, Ollama, LM Studio)
+**Works with:**
+- OpenAI and OpenAI-compatible public APIs
+- Local inference: Ollama, LM Studio, llama.cpp, vLLM
 
 **Requirements:**
 - `/v1/chat/completions` endpoint with SSE streaming
-- CORS headers or proxy configuration
-- Optional: `/v1/models` for model discovery
+- CORS headers from the API provider, or a proxy if needed
+- Optional: `/v1/models` for automatic model discovery
 
 ## Use Cases
 
-**Rapid Prototyping:** Immediate test environment for prompt engineering without setup overhead.
+- **Prompt engineering** — rapid test environment with zero setup
+- **Conversation analysis** — surgical message manipulation for debugging context handling
+- **Local inference** — direct connection to local LLM servers without cloud dependencies
+- **Research** — complete conversation exports for systematic evaluation of model behavior
 
-**Conversation Analysis:** JSON editor enables surgical message manipulation for debugging context handling and response variance.
+## Design Choices (Not Limitations)
 
-**Local Inference:** Direct integration with local inference servers without cloud dependencies.
+These are intentional constraints, not missing features:
 
-**Research Tool:** Complete conversation exports for systematic evaluation of model behavior.
-
-## Limitations
-
-- No server-side persistence – conversations exist only in browser state
-- CORS constraints require either permissive API headers or proxy setup
-- No multi-modal support (text-only)
-- No function calling integration
-- Token counting is approximate (based on streaming metrics, not tokenizer-accurate)
+- **No server-side persistence.** Conversations exist only in browser state. This keeps the app stateless and portable.
+- **No function calling.** The JSON editor lets you inject any message format manually — no need for a function-calling abstraction.
+- **Approximate token counting.** Based on streaming metrics, not tokenizer-accurate. Sufficient for rate display; use a proper tokenizer if precision matters.
+- **Single file only.** Every feature lives in `chat.html`. No external files, no imports, no build step. This is the architecture, not a limitation.
 
 ## Development
 
-The project follows a single-file philosophy. All functionality resides in `chat.html`:
+The project has exactly one source file: `chat.html` (~1300 lines). All code is organized inline:
 
-- CSS: Inline `<style>` block (lines 7-129)
-- HTML: Body structure (lines 130-220)
-- JavaScript: Inline `<script>` block (lines 221-1070)
+- **CSS:** `<style>` block at the top of `<head>`
+- **HTML:** Body structure in `<body>`
+- **JavaScript:** `<script>` block at the end of `<body>`
 
-No build pipeline, no bundling, no dependencies. Pure vanilla.
+No build pipeline. No bundling. No dependencies. Pure vanilla.
+
+If a proposed change would require adding files, installing packages, or running a build step — it violates the architecture and should be rejected. See `.specify/memory/constitution.md` for the full set of non-negotiable principles.
 
 ## License
 
