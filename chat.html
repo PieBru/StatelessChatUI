@@ -1269,10 +1269,10 @@
   els.importBtn.addEventListener('click', () => els.importFile.click());
   els.importFile.addEventListener('change', () => { const f = els.importFile.files?.[0]; if (f) handleFile(f); els.importFile.value = ''; });
   els.exportBtn.addEventListener('click', exportChat);
-  // Model select: loading placeholder or actual selection
+  // Model select: load models on focus if only placeholder option exists
   if (els.model) {
-    els.model.addEventListener('change', (e) => {
-      if (e.target.value === '') loadModels();
+    els.model.addEventListener('focus', () => {
+      if (els.model.options.length <= 1) loadModels();
     });
   }
   els.input.addEventListener('keydown', (e) => { if ((e.key === 'Enter' && (e.ctrlKey || e.metaKey))) { e.preventDefault(); sendMessage(); } });
