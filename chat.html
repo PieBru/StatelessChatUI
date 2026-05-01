@@ -15,7 +15,9 @@
     .left-panel.collapsed{width:40px; padding:.6rem 0; overflow:hidden; scrollbar-width:none}
     .left-panel.collapsed::-webkit-scrollbar{display:none}
     .left-panel.collapsed .lp-brand,
-    .left-panel.collapsed .lp-controls{opacity:0; pointer-events:none; transition:opacity 150ms ease}
+    .left-panel.collapsed .lp-controls,
+    .left-panel.collapsed .drop,
+    .left-panel.collapsed details.raw{opacity:0; pointer-events:none; transition:opacity 150ms ease}
     .main-area{display:flex; flex-direction:column; min-width:0; overflow:hidden}
 
     /* Left panel internals */
